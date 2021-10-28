@@ -813,6 +813,7 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
         if ((startX - xLanding >= -1 && startX - xLanding <= 1) && (startY - yLanding >= -1 && startY - yLanding <= 1)) {
             if (!piecePresent(e.getX(), e.getY())) {
                 if(playerTurnIsWhite && !blackKingIsNear(newX, newY)) {
+                    System.out.println("Hello there!");
                     return true;
                 }
                 else {

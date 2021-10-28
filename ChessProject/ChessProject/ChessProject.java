@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.concurrent.TimeUnit;
 
 /*
 	This class can be used as a starting point for creating your Chess game project. The only piece that 
@@ -12,16 +13,16 @@ import java.awt.event.MouseMotionListener;
 public class ChessProject extends JFrame implements MouseListener, MouseMotionListener {
     JLayeredPane layeredPane;
     JPanel chessBoard;
+    JPanel panels;
     JLabel chessPiece;
+    JLabel pieces;
     int xAdjustment;
     int yAdjustment;
     int startX;
     int startY;
     int initialX;
     int initialY;
-    JPanel panels;
-    JLabel pieces;
-
+    boolean playerTurnIsWhite = true;
 
     public ChessProject() {
         Dimension boardSize = new Dimension(600, 600);
@@ -113,7 +114,7 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
     }
 
     /*
-        Main method that gets the ball moving.
+        Main method that starts the program
     */
     public static void main(String[] args) {
         JFrame frame = new ChessProject();
@@ -125,7 +126,7 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
     }
 
     /*
-        This method checks if there is a piece present on a particular square.
+        This method checks if there is a piece present on a particular square
     */
     private Boolean piecePresent(int x, int y) {
         Component c = chessBoard.findComponentAt(x, y);
@@ -133,7 +134,7 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
     }
 
     /*
-        This is a method to check if a piece is a Black piece.
+        This is a method to check if an opponent piece is a black piece
     */
     private Boolean checkWhiteOpponent(int newX, int newY) {
         Boolean opponent;
@@ -145,7 +146,7 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
     }
 
     /*
-        Checks if a piece is a white piece
+        Checks if an opponent piece is a white piece
      */
     private Boolean checkBlackOpponent(int newX, int newY) {
         Boolean opponent;
@@ -153,6 +154,85 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
         JLabel awaitingPiece = (JLabel) c1;
         String tmp1 = awaitingPiece.getIcon().toString();
         opponent = tmp1.contains("White");
+        return opponent;
+    }
+
+    private Boolean checkIfBlackKingNear(int newX, int newY){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newX, newY);
+        JLabel awaitingPiece = (JLabel) c1;
+        String tmp1 = awaitingPiece.getIcon().toString();
+        opponent = tmp1.equals("BlackKing");
+        return opponent;
+    }
+
+    private Boolean blackKingIsNear(int newX, int newY){
+        //Top left
+        if(checkIfBlackKingNear(newX - 1, newY - 1)){
+            System.out.println("Sorry there's a black king in the top left space");
+            return true;
+        }
+        //Top center
+        else if (checkIfBlackKingNear(newX, newY - 1)){
+            System.out.println("Sorry there's a black king in the top center space");
+            return true;
+        }
+        //Top right
+        else if (checkIfBlackKingNear(newX + 1, newY - 1)){
+            System.out.println("Sorry there's a black king in the top right space");
+            return true;
+        }
+        //Center right
+        else if (checkIfBlackKingNear(newX + 1, newY)){
+            System.out.println("Sorry there's a black king in the center right space");
+            return true;
+        }
+        //Bottom right
+        else if (checkIfBlackKingNear(newX + 1, newY + 1)){
+            System.out.println("Sorry there's a black king in the bottom right space");
+            return true;
+        }
+        //Center bottom
+        else if (checkIfBlackKingNear(newX, newY + 1)){
+            System.out.println("Sorry there's a black king in the center bottom space");
+            return true;
+        }
+        //Bottom left
+        else if (checkIfBlackKingNear(newX - 1, newY + 1)){
+            System.out.println("Sorry there's a black king in the bottom left space");
+            return true;
+        }
+        //Center left
+        else if (checkIfBlackKingNear(newX - 1, newY)){
+            System.out.println("Sorry there's a black king in the center left space");
+            return true;
+        }
+        return false;
+    }
+
+    private Boolean blackCheckMate(int newX, int newY){
+        try {
+            Boolean opponent;
+            Component c1 = chessBoard.findComponentAt(newX, newY);
+            JLabel awaitingPiece = (JLabel) c1;
+            String tmp1 = awaitingPiece.getIcon().toString();
+            opponent = tmp1.equals("WhiteKing");
+            JOptionPane.showMessageDialog(null, "The game is done! Black wins!");
+            TimeUnit.SECONDS.sleep(2);
+            return opponent;
+        } catch (InterruptedException e){
+            System.err.format("IOException: %s%n", e);
+        }
+        return false;
+    }
+
+    private Boolean whiteCheckMate(int newX, int newY){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newX, newY);
+        JLabel awaitingPiece = (JLabel) c1;
+        String tmp1 = awaitingPiece.getIcon().toString();
+        opponent = tmp1.equals("BlackKing");
+        JOptionPane.showMessageDialog(null, "The game is done! White Wins!");
         return opponent;
     }
 
@@ -203,14 +283,13 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
         int xMovement = Math.abs((e.getX() / 75) - startX);
         int yMovement = Math.abs((e.getY() / 75) - startY);
 
-
 		/*
 			The only piece that has been enabled to move is a White Pawn...but we should really have this is a separate
 			method somewhere...how would this work.
 
 			So a Pawn is able to move two squares forward one its first go but only one square after that.
 			The Pawn is the only piece that cannot move backwards in chess...so be careful when committing
-			a pawn forward. A Pawn is able to take any of the opponent’s pieces but they have to be one
+			a pawn forward. A Pawn is able to take any of the opponent’s pieces, but they have to be one
 			square forward and one square over, i.e. in a diagonal direction from the Pawns original position.
 			If a Pawn makes it to the top of the other side, the Pawn can turn into any other piece, for
 			demonstration purposes the Pawn here turns into a Queen.
@@ -223,31 +302,12 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
         System.out.println("The landing coordinates are: " + " " + xLanding + " , " + yLanding);
         System.out.println("----------------------------------------");
 
-        /*
-            Black Pieces below
-         */
-
-        //Black Pawn
-        if (pieceName.equals("BlackPawn")) {
-            System.out.println("A black pawn is being moved");
-            validMove = isBlackPawnMovementValid(e, xLanding, yLanding);
-            if (validMove && startY == 10) {
-                success = true;
-            }
-        }
-
-        //King
-        else if (pieceName.contains("King")) {
-            System.out.println("A king is being moved");
-            validMove = isKingMovementValid(e, xLanding, yLanding, xMovement, yMovement, pieceName);
-        }
-
 		/*
 			White pieces below
 		 */
 
         //White Pawn
-        else if (pieceName.equals("WhitePawn")) {
+        if (pieceName.equals("WhitePawn") && playerTurnIsWhite) {
             System.out.println("A white pawn is being moved");
             validMove = isWhitePawnMovementValid(e, xLanding, yLanding);
             //Keep in mind that startY implements promotion functionality
@@ -256,29 +316,79 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
             }
         }
 
-        //Queen
-        else if (pieceName.contains("Queen")) {
-            System.out.println("A queen is being moved");
+        //White Queen
+        else if (pieceName.equals("WhiteQueen") && playerTurnIsWhite) {
+            System.out.println("A white queen is being moved");
             //We are using both bishop movements and rook movements because together they equal the movement of queen movements
             validMove = isBishopMovementValid(e, xLanding, yLanding, xMovement, pieceName) || isRookMovementValid(e, xLanding, yLanding, xMovement, yMovement, pieceName);
         }
 
-        //Bishop
-        else if (pieceName.contains("Bishop")) {
+        //White Bishop
+        else if (pieceName.equals("WhiteBishop") && playerTurnIsWhite) {
             System.out.println("A bishop is being moved");
             validMove = isBishopMovementValid(e, xLanding, yLanding, xMovement, pieceName);
         }
 
-        //Rook
-        else if (pieceName.contains("Rook")) {
-            System.out.println("A rook is being moved");
+        //White Rook
+        else if (pieceName.contains("WhiteRook") && playerTurnIsWhite) {
+            System.out.println("A white rook is being moved");
             validMove = isRookMovementValid(e, xLanding, yLanding, xMovement, yMovement, pieceName);
         }
 
-        //Knight
-        else if (pieceName.contains("Knight")) {
-            System.out.println("A knight is being moved");
+        //White Knight
+        else if (pieceName.contains("WhiteKnight") && playerTurnIsWhite) {
+            System.out.println("A white knight is being moved");
             validMove = isKnightMovementValid(e, xLanding, yLanding, xMovement, yMovement, pieceName);
+        }
+
+        //White King
+        else if (pieceName.equals("WhiteKing") && playerTurnIsWhite) {
+            System.out.println("A white king is being moved");
+            validMove = isKingMovementValid(e, xLanding, yLanding, pieceName);
+        }
+
+          /*
+            Black Pieces below
+         */
+
+        //Black Pawn
+        if (pieceName.equals("BlackPawn") && !playerTurnIsWhite) {
+            System.out.println("A black pawn is being moved");
+            validMove = isBlackPawnMovementValid(e, xLanding, yLanding);
+            if (validMove && startY == 1) {
+                success = true;
+            }
+        }
+
+        //Black Queen
+        else if (pieceName.equals("BlackQueen") && !playerTurnIsWhite) {
+            System.out.println("A black queen is being moved");
+            //We are using both bishop movements and rook movements because together they equal the movement of queen movements
+            validMove = isBishopMovementValid(e, xLanding, yLanding, xMovement, pieceName) || isRookMovementValid(e, xLanding, yLanding, xMovement, yMovement, pieceName);
+        }
+
+        //Black Bishop
+        else if (pieceName.equals("BlackBishop") && !playerTurnIsWhite) {
+            System.out.println("A black bishop is being moved");
+            validMove = isBishopMovementValid(e, xLanding, yLanding, xMovement, pieceName);
+        }
+
+        //Black Rook
+        else if (pieceName.equals("BlackRook") && !playerTurnIsWhite) {
+            System.out.println("A black rook is being moved");
+            validMove = isRookMovementValid(e, xLanding, yLanding, xMovement, yMovement, pieceName);
+        }
+
+        //Black Knight
+        else if (pieceName.equals("BlackKnight") && !playerTurnIsWhite) {
+            System.out.println("A black knight is being moved");
+            validMove = isKnightMovementValid(e, xLanding, yLanding, xMovement, yMovement, pieceName);
+        }
+
+        //Black King
+        else if (pieceName.equals("BlackKing") && !playerTurnIsWhite) {
+            System.out.println("A black king is being moved");
+            validMove = isKingMovementValid(e, xLanding, yLanding, pieceName);
         }
 
 		/*
@@ -298,8 +408,9 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
             panels.add(pieces);
         } else {
             if (success) {
-                int location = 56 + (e.getX() / 75);
-                if (c instanceof JLabel) {
+                if (playerTurnIsWhite) {
+                    //Location is the end of the board. In this case we have the furthest row from the white side. Eight squares in the row will be found from 56 out of 64 and the piece position will determine where in the row the piece lands
+                    int location = 56 + (e.getX() / 75);
                     Container parent = c.getParent();
                     parent.remove(0);
                     pieces = new JLabel(new ImageIcon("WhiteQueen.png"));
@@ -307,11 +418,20 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
                     parent.add(pieces);
                 }
                 else {
-                    Container parent = (Container) c;
-                    pieces = new JLabel(new ImageIcon("WhiteQueen.png"));
+                    // //Location is the end of the board. In this case we have the furthest row from the black side. The row won't have to be concatenated because it starts at zero. e.getX() / 75 will do.
+                    int location = e.getX() / 75;
+                    Container parent = c.getParent();
+                    parent.remove(0);
+                    pieces = new JLabel(new ImageIcon("BlackQueen.png"));
                     parent = (JPanel) chessBoard.getComponent(location);
                     parent.add(pieces);
                 }
+//                else {
+//                    Container parent = (Container) c;
+//                    pieces = new JLabel(new ImageIcon("WhiteQueen.png"));
+//                    parent = (JPanel) chessBoard.getComponent(location);
+//                    parent.add(pieces);
+//                }
             } else {
                 if (c instanceof JLabel) {
                     Container parent = c.getParent();
@@ -323,13 +443,19 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
                 }
                 chessPiece.setVisible(true);
             }
+            playerTurnIsWhite = !playerTurnIsWhite;
+            if (playerTurnIsWhite){
+                System.out.println("It's the white player's turn!");
+            }
+            else{
+                System.out.println("It's the black player's turn!");
+            }
         }
     }
 
     public boolean isPieceInBounds(int xLanding, int yLanding){
         return !(xLanding < 0 || yLanding < 0 || xLanding > 7 || yLanding > 7);
     }
-
     /*
         Movement functions for chess pieces
      */
@@ -486,15 +612,6 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
         return false;
     }
 
-    /**
-     *
-     * @param e
-     * @param xLanding
-     * @param yLanding
-     * @param xMovement
-     * @param pieceName
-     * @return
-     */
     public boolean isBishopMovementValid(MouseEvent e, int xLanding, int yLanding, int xMovement, String pieceName){
         if(!isPieceInBounds(xLanding, yLanding)){
             return false;
@@ -687,143 +804,21 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
         return false;
     }
 
-    public boolean isKingMovementValid(MouseEvent e, int xLanding, int yLanding, int xMovement, int yMovement, String pieceName){
+    public boolean isKingMovementValid(MouseEvent e, int xLanding, int yLanding, String pieceName) {
         int newY = e.getY() / 75;
         int newX = e.getX() / 75;
-        if(!isPieceInBounds(xLanding, yLanding)){
+        if (!isPieceInBounds(xLanding, yLanding)) {
             return false;
         }
-        if((startX - xLanding >= -1 && startX - xLanding <= 1) && (startY - yLanding >= -1 && startY - yLanding <= 1)){
-            //Checking the top right diagonal
-            if((startX - xLanding < 0) && (startY - yLanding > 0)) {
-                System.out.println("Moving top right diagonal");
-                if (piecePresent(newX, (newY - 1))) {
-                    if (pieceName.contains("King")) {
-                        return checkBlackOpponent(e.getX(), e.getY());
-                    }
-                    else if (pieceName.contains("King")){
-                        return checkWhiteOpponent(e.getX(), e.getY());
-                    }
-                    else{
-                        return true;
-                    }
+        if ((startX - xLanding >= -1 && startX - xLanding <= 1) && (startY - yLanding >= -1 && startY - yLanding <= 1)) {
+            if (!piecePresent(e.getX(), e.getY())) {
+                if(playerTurnIsWhite && !blackKingIsNear(newX, newY)) {
+                    return true;
                 }
-//                if (piecePresent((e.getX() + 1), (e.getY() - 1))) {
-//                    if (pieceName.contains("King")) {
-//                        return checkBlackOpponent(e.getX() + 1, e.getY() - 1);
-//                    }
-//                    else if (pieceName.contains("King")){
-//                        return checkWhiteOpponent(e.getX() + 1, e.getY() - 1);
-//                    }
-//                    else{
-//                        return true;
-//                    }
-//                }
-//                if (piecePresent((e.getX() + 1), e.getY())) {
-//                    if (pieceName.contains("King")) {
-//                        return checkBlackOpponent(e.getX() + 1, e.getY());
-//                    }
-//                    else if (pieceName.contains("King")){
-//                        return checkWhiteOpponent(e.getX() + 1, e.getY());
-//                    }
-//                    else{
-//                        return true;
-//                    }
-//                }
-            } else if((startX - xLanding < 0) && (startY - yLanding < 0)){
-                //Checking the bottom right diagonal
-                System.out.println("Moving bottom right diagonal");
-                if (piecePresent(newX + 1, newY)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
+                else {
+                    return false;
                 }
-                if (piecePresent(newX + 1, newY + 1)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-                if (piecePresent(newX, newY + 1)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-            } else if((startX - xLanding > 0) && (startY - yLanding > 0)){
-                //Checking the top left diagonal
-                System.out.println("Moving top left diagonal");
-                if (piecePresent(newX - 1, newY)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-                if (piecePresent(newX - 1, newY + 1)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-                if (piecePresent(newX, newY + 1)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-            } else if ((startX - xLanding > 0) && (startY - yLanding < 0)) {
-                //Checking the bottom left diagonal
-                System.out.println("Moving bottom left diagonal");
-                if (piecePresent(newX - 1, newY)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-                if (piecePresent(newX - 1, newY + 1)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-                if (piecePresent(newX, newY - 1)){
-                    if(pieceName.contains("King")){
-                        System.out.println("You cannot move into check!");
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-            }
-            else if (!piecePresent(e.getX(), e.getY())) {
-                return true;
-            } else{
+            } else {
                 //A piece is present, but check if it is a white opponent and if so set valid move to true
                 if (pieceName.contains("White")) {
                     return checkWhiteOpponent(e.getX(), e.getY());
@@ -833,9 +828,6 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
                     return checkBlackOpponent(e.getX(), e.getY());
                 }
             }
-        } else{
-            System.out.println("Invalid move!");
-            return false;
         }
         return false;
     }

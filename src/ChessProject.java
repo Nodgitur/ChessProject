@@ -5,11 +5,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.concurrent.TimeUnit;
 
-/*
-	This class can be used as a starting point for creating your Chess game project. The only piece that 
-	has been coded is a white pawn...a lot done, more to do!
-*/
-
 public class ChessProject extends JFrame implements MouseListener, MouseMotionListener {
     JLayeredPane layeredPane;
     JPanel chessBoard;
@@ -157,55 +152,159 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
         return opponent;
     }
 
-    private Boolean checkIfBlackKingNear(int newX, int newY){
+    //Top left
+    private Boolean checkIfKingNearTopLeft(int newXMinus1, int newYMinus1){
         Boolean opponent;
-        Component c1 = chessBoard.findComponentAt(newX, newY);
+        Component c1 = chessBoard.findComponentAt(newXMinus1, newYMinus1);
         JLabel awaitingPiece = (JLabel) c1;
         String tmp1 = awaitingPiece.getIcon().toString();
         opponent = tmp1.equals("BlackKing");
         return opponent;
     }
 
-    private Boolean blackKingIsNear(int newX, int newY){
-        //Top left
-        if(checkIfBlackKingNear(newX - 1, newY - 1)){
-            System.out.println("Sorry there's a black king in the top left space");
-            return true;
+    //Top Center
+    private Boolean checkIfBlackKingNearTopCenter(int newX, int newYMinus1){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newX, newYMinus1);
+        JLabel awaitingPiece = (JLabel) c1;
+        String tmp1 = awaitingPiece.getIcon().toString();
+        opponent = tmp1.equals("BlackKing");
+        return opponent;
+    }
+
+    //Top Right
+    private Boolean checkIfBlackKingNearTopRight(int newXPlus1, int newYMinus1){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newXPlus1, newYMinus1);
+        JLabel awaitingPiece = (JLabel) c1;
+        String tmp1 = awaitingPiece.getIcon().toString();
+        opponent = tmp1.equals("BlackKing");
+        return opponent;
+    }
+
+    //Center Right
+    private Boolean checkIfBlackKingNearCenterRight(int newX, int newY){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newX, newY);
+        if (c1 instanceof JLabel) {
+            JLabel awaitingPiece = (JLabel) c1;
+            String tmp1 = awaitingPiece.getIcon().toString();
+            opponent = tmp1.contains("King");
+            return opponent;
         }
-        //Top center
-        else if (checkIfBlackKingNear(newX, newY - 1)){
-            System.out.println("Sorry there's a black king in the top center space");
-            return true;
+        else {
+            System.out.println("c1 is not an instance of JLabel");
+            return false;
         }
-        //Top right
-        else if (checkIfBlackKingNear(newX + 1, newY - 1)){
-            System.out.println("Sorry there's a black king in the top right space");
-            return true;
+    }
+
+    //Bottom Right
+    private Boolean checkIfBlackKingNearBottomRight(int newXPlus1, int newYPlus1){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newXPlus1, newYPlus1);
+        if(c1 instanceof JLabel) {
+            JLabel awaitingPiece = (JLabel) c1;
+            String tmp1 = awaitingPiece.getIcon().toString();
+            opponent = tmp1.equals("BlackKing");
+            return opponent;
         }
-        //Center right
-        else if (checkIfBlackKingNear(newX + 1, newY)){
-            System.out.println("Sorry there's a black king in the center right space");
-            return true;
+        else{
+            return false;
         }
-        //Bottom right
-        else if (checkIfBlackKingNear(newX + 1, newY + 1)){
-            System.out.println("Sorry there's a black king in the bottom right space");
-            return true;
-        }
-        //Center bottom
-        else if (checkIfBlackKingNear(newX, newY + 1)){
-            System.out.println("Sorry there's a black king in the center bottom space");
-            return true;
-        }
-        //Bottom left
-        else if (checkIfBlackKingNear(newX - 1, newY + 1)){
-            System.out.println("Sorry there's a black king in the bottom left space");
-            return true;
-        }
-        //Center left
-        else if (checkIfBlackKingNear(newX - 1, newY)){
-            System.out.println("Sorry there's a black king in the center left space");
-            return true;
+    }
+
+    //Center Bottom
+    private Boolean checkIfBlackKingNearCenterBottom(int newX, int newYPlus1){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newX, newYPlus1);
+        JLabel awaitingPiece = (JLabel) c1;
+        String tmp1 = awaitingPiece.getIcon().toString();
+        opponent = tmp1.equals("BlackKing");
+        return opponent;
+    }
+
+    //Center Left
+    private Boolean checkIfBlackKingNearBottomLeft(int newXMinus1, int newYPlus1){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newXMinus1, newYPlus1);
+        JLabel awaitingPiece = (JLabel) c1;
+        String tmp1 = awaitingPiece.getIcon().toString();
+        opponent = tmp1.equals("BlackKing");
+        return opponent;
+    }
+
+    //Center Left
+    private Boolean checkIfBlackKingNearCenterLeft(int newXMinus1, int newY){
+        Boolean opponent;
+        Component c1 = chessBoard.findComponentAt(newXMinus1, newY);
+        JLabel awaitingPiece = (JLabel) c1;
+        String tmp1 = awaitingPiece.getIcon().toString();
+        opponent = tmp1.equals("BlackKing");
+        return opponent;
+    }
+
+
+
+//    private Boolean blackKingIsNear(int newX, int newY, int newXMinus1, int newYMinus1, int newXPlus1, int newYPlus1){
+//        //Top left
+//        if(checkIfBlackKingNear(newXMinus1, newYMinus1)){
+//            System.out.println("Sorry there's a black king in the top left space");
+//            return true;
+//        }
+//        //Top center
+//        else if (checkIfBlackKingNear(newX, newYMinus1)){
+//            System.out.println("Sorry there's a black king in the top center space");
+//            return true;
+//        }
+//        //Top right
+//        else if (checkIfBlackKingNear(newXPlus1, newYMinus1)){
+//            System.out.println("Sorry there's a black king in the top right space");
+//            return true;
+//        }
+//        //Center right
+//        else if (checkIfBlackKingNear(newXPlus1, newY)){
+//            System.out.println("Sorry there's a black king in the center right space");
+//            return true;
+//        }
+//        //Bottom right
+//        else if (checkIfBlackKingNear(newXPlus1, newYPlus1)){
+//            System.out.println("Sorry there's a black king in the bottom right space");
+//            return true;
+//        }
+//        //Center bottom
+//        else if (checkIfBlackKingNear(newX, newYPlus1)){
+//            System.out.println("Sorry there's a black king in the center bottom space");
+//            return true;
+//        }
+//        //Bottom left
+//        else if (checkIfBlackKingNear(newXMinus1, newYPlus1)){
+//            System.out.println("Sorry there's a black king in the bottom left space");
+//            return true;
+//        }
+//        //Center left
+//        else if (checkIfBlackKingNear(newXMinus1, newY)){
+//            System.out.println("Sorry there's a black king in the center left space");
+//            return true;
+//        }
+//        else {
+//            System.out.println("No black king detected");
+//            return false;
+//        }
+//    }
+
+    private Boolean whiteCheckMate(int newX, int newY){
+        try {
+            Boolean opponent;
+            Component c1 = chessBoard.findComponentAt(newX, newY);
+            JLabel awaitingPiece = (JLabel) c1;
+            String tmp1 = awaitingPiece.getIcon().toString();
+            opponent = tmp1.equals("BlackKing");
+            JOptionPane.showMessageDialog(null, "The game is done! White wins!");
+            TimeUnit.SECONDS.sleep(2);
+            System.exit(0);
+            return opponent;
+        } catch (InterruptedException e){
+            System.err.format("IOException: %s%n", e);
         }
         return false;
     }
@@ -217,23 +316,14 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
             JLabel awaitingPiece = (JLabel) c1;
             String tmp1 = awaitingPiece.getIcon().toString();
             opponent = tmp1.equals("WhiteKing");
-            JOptionPane.showMessageDialog(null, "The game is done! Black wins!");
+            JOptionPane.showMessageDialog(null, "The game is done! Black Wins!");
             TimeUnit.SECONDS.sleep(2);
+            System.exit(0);
             return opponent;
         } catch (InterruptedException e){
             System.err.format("IOException: %s%n", e);
         }
         return false;
-    }
-
-    private Boolean whiteCheckMate(int newX, int newY){
-        Boolean opponent;
-        Component c1 = chessBoard.findComponentAt(newX, newY);
-        JLabel awaitingPiece = (JLabel) c1;
-        String tmp1 = awaitingPiece.getIcon().toString();
-        opponent = tmp1.equals("BlackKing");
-        JOptionPane.showMessageDialog(null, "The game is done! White Wins!");
-        return opponent;
     }
 
     /*
@@ -805,23 +895,35 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
     }
 
     public boolean isKingMovementValid(MouseEvent e, int xLanding, int yLanding, String pieceName) {
-        int newY = e.getY() / 75;
-        int newX = e.getX() / 75;
+        int newXMinus1 = e.getX() - 75;
+        int newXPlus1 = e.getX() + 75;
+        int newYMinus1 = e.getY() - 75;
+        int newYPlus1 = e.getY() + 75;
+
         if (!isPieceInBounds(xLanding, yLanding)) {
             return false;
         }
         if ((startX - xLanding >= -1 && startX - xLanding <= 1) && (startY - yLanding >= -1 && startY - yLanding <= 1)) {
             if (!piecePresent(e.getX(), e.getY())) {
-                if(playerTurnIsWhite && !blackKingIsNear(newX, newY)) {
-                    System.out.println("Hello there!");
-                    return true;
-                }
-                else {
-                    return false;
-                }
+              if(playerTurnIsWhite && pieceName.equals("WhiteKing")) {
+                  return !checkIfBlackKingNearCenterRight(newXPlus1, e.getY());
+              }
+              else{
+                  return true;
+              }
+            }
+            else if(playerTurnIsWhite){
+                 return checkIfBlackKingNearTopCenter(e.getX(), e.getY());
+            }
             } else {
+                if(pieceName.equals("WhiteKing")){
+                    return whiteCheckMate(e.getX(), e.getY());
+                }
+                else if(pieceName.equals("BlackKing")){
+                    return blackCheckMate(e.getX(), e.getY());
+                }
                 //A piece is present, but check if it is a white opponent and if so set valid move to true
-                if (pieceName.contains("White")) {
+                else if (pieceName.contains("White")) {
                     return checkWhiteOpponent(e.getX(), e.getY());
                 }
                 //Check if piece is black, if so valid move is also equal to true
@@ -829,7 +931,6 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
                     return checkBlackOpponent(e.getX(), e.getY());
                 }
             }
-        }
         return false;
     }
 
